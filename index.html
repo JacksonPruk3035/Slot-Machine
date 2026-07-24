@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lucky Strike — Casino Night</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Monoton&family=Orbitron:wght@500;700;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #1b0e2b;
+    --bg-deeper: #120a1d;
+    --felt: #0b6e4f;
+    --felt-dark: #073f2d;
+    --gold: #e8b54d;
+    --gold-bright: #ffd782;
+    --pink: #ff3d81;
+    --cream: #f5e9d3;
+    --red: #e8433a;
+    --panel: #241134;
+    --cyan: #4fd3e8;
+    --purple: #b389ff;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,61,129,0.12), transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(11,110,79,0.18), transparent 45%),
+      var(--bg-deep);
+    font-family: 'Poppins', sans-serif;
+    color: var(--cream);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 28px 14px;
+    overflow-x:hidden;
+  }
+
+  .stage{ position:relative; width:100%; max-width:640px; }
+
+  .top-controls{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .icon-btn{
+    background: var(--panel); border: 2px solid rgba(232,181,77,0.35); color: var(--gold-bright);
+    width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:18px; cursor:pointer; transition: transform .15s, border-color .15s;
+  }
+  .icon-btn:hover{ transform: scale(1.08); border-color: var(--gold); }
+  .ledger-btn{ border-radius:20px; width:auto; padding:0 16px; gap:6px; font-size:13px; font-weight:600; }
+
+  .cabinet-wrap{ position:relative; padding: 18px; }
+  .bulb{
+    position:absolute; width:9px; height:9px; border-radius:50%; background: var(--gold);
+    box-shadow: 0 0 4px 1px rgba(232,181,77,0.6); opacity:.25; animation: chase 1.6s linear infinite; pointer-events:none;
+  }
+  @keyframes chase{
+    0%,85%,100%{ opacity:.22; box-shadow:0 0 4px 1px rgba(232,181,77,0.4); background:var(--gold);}
+    5%,15%{ opacity:1; box-shadow:0 0 12px 4px rgba(255,216,130,0.95); background:var(--gold-bright);}
+  }
+
+  .cabinet{
+    position:relative; background: linear-gradient(160deg, #2a1440, #180a26 70%);
+    border-radius: 26px; padding: 26px 22px 22px; border: 3px solid rgba(232,181,77,0.5);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.4) inset, 0 30px 60px -20px rgba(0,0,0,0.7);
+  }
+
+  .brand{ text-align:center; margin-bottom:14px; }
+  .brand h1{
+    font-family:'Monoton', cursive; font-size: 42px; letter-spacing: 2px; margin: 0; color: var(--gold-bright);
+    text-shadow: 0 0 6px rgba(255,216,130,0.8), 0 0 18px rgba(255,61,129,0.55), 0 0 34px rgba(255,61,129,0.35);
+    line-height:1;
+  }
+  .brand p{ margin:6px 0 0; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,233,211,0.55); font-weight:600; }
+
+  .readouts{ display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; margin: 16px 0 16px; }
+  .readout{
+    background: var(--bg-deeper); border: 1.5px solid rgba(232,181,77,0.3); border-radius: 12px;
+    padding: 7px 4px 9px; text-align:center; box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+  }
+  .readout .label{ font-size: 8.5px; letter-spacing:.1em; text-transform:uppercase; color: rgba(245,233,211,0.5); font-weight:700; margin-bottom:4px; }
+  .readout .value{
+    font-family:'Orbitron', sans-serif; font-weight:700; font-size: clamp(12px, 3.8vw, 17px);
+    color: var(--gold-bright); text-shadow: 0 0 8px rgba(255,216,130,0.5);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .readout.win .value{ color:#8affc1; text-shadow:0 0 10px rgba(138,255,193,0.6); }
+
+  .reel-frame{
+    background: linear-gradient(180deg, var(--felt-dark), var(--felt));
+    border-radius: 16px; padding: 14px; border: 3px solid var(--gold);
+    box-shadow: inset 0 0 24px rgba(0,0,0,0.55), 0 6px 16px rgba(0,0,0,0.4);
+    position: relative;
+  }
+  .grid-wrap{ position:relative; width:290px; height:270px; margin:0 auto; }
+  .reels{ display:flex; gap:10px; }
+  .reel{
+    width: 90px; height: 270px; background: #05170f; border-radius: 10px; overflow:hidden; position:relative;
+    border: 2px solid rgba(0,0,0,0.5); box-shadow: inset 0 6px 10px rgba(0,0,0,0.7), inset 0 -6px 10px rgba(0,0,0,0.5);
+  }
+  .reel::before, .reel::after{ content:""; position:absolute; left:0; right:0; height:26px; z-index:2; pointer-events:none; }
+  .reel::before{ top:0; background: linear-gradient(180deg, rgba(0,0,0,0.65), transparent); }
+  .reel::after{ bottom:0; background: linear-gradient(0deg, rgba(0,0,0,0.65), transparent); }
+  .strip{ position:absolute; left:0; top:0; width:100%; }
+  .sym{ height:90px; display:flex; align-items:center; justify-content:center; font-size:46px; line-height:1; }
+  .sym.seven{
+    font-family:'Orbitron', sans-serif; font-weight:900; font-size:42px;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow: 0 0 12px rgba(255,216,130,0.5);
+  }
+  .payline-svg{ position:absolute; inset:0; width:290px; height:270px; pointer-events:none; z-index:4; }
+  .payline-svg polyline{ fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; opacity:.28; transition: opacity .15s, stroke-width .15s; }
+  .payline-svg polyline.active{ opacity:.55; }
+  .payline-svg polyline.hit{ opacity:1; stroke-width:5; filter: drop-shadow(0 0 4px currentColor); }
+
+  .result-msg{ text-align:center; margin-top:12px; min-height: 22px; font-weight:700; font-size:13.5px; letter-spacing:.02em; }
+  .result-msg.win{ color:#8affc1; text-shadow:0 0 10px rgba(138,255,193,0.5); }
+  .result-msg.lose{ color: rgba(245,233,211,0.45); font-weight:500; }
+
+  .section-label{ font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color: rgba(245,233,211,0.5); font-weight:700; margin: 16px 2px 8px; display:flex; justify-content:space-between; align-items:center; }
+
+  .lines-row{ display:flex; gap:8px; }
+  .line-btn{
+    flex:1; padding:9px 4px; border-radius:10px; border:1.5px solid rgba(245,233,211,0.25);
+    background: rgba(245,233,211,0.06); color: var(--cream); font-weight:700; font-size:12px; cursor:pointer;
+  }
+  .line-btn.active{ background: linear-gradient(135deg, var(--gold-bright), var(--gold)); color:#241134; border-color: var(--gold-bright); }
+
+  .chip-row{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+  .chip{
+    width:50px; height:50px; border-radius:50%; border: 3px dashed rgba(245,233,211,0.7);
+    display:flex; align-items:center; justify-content:center; font-family:'Orbitron'; font-weight:700; font-size:11.5px;
+    cursor:pointer; user-select:none; background: radial-gradient(circle at 35% 30%, var(--chip-c1), var(--chip-c2));
+    color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); box-shadow: 0 4px 8px rgba(0,0,0,0.4); transition: transform .12s;
+  }
+  .chip:hover{ transform: translateY(-3px) scale(1.05); }
+  .chip:active{ transform: translateY(0) scale(0.97); }
+  .chip.c1{ --chip-c1:#ff6f9c; --chip-c2:#c21f57; }
+  .chip.c2{ --chip-c1:#ffb266; --chip-c2:#c9711f; }
+  .chip.c5{ --chip-c1:#5fd3a4; --chip-c2:#0b6e4f; }
+
+  .util-row{ display:flex; gap:8px; margin-top:10px; }
+  .util-btn{
+    flex:1; padding:10px 8px; border-radius:10px; border:1.5px solid rgba(245,233,211,0.25);
+    background: rgba(245,233,211,0.06); color: var(--cream); font-weight:600; font-size:12px; cursor:pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .util-btn:hover{ background: rgba(245,233,211,0.14); border-color: rgba(245,233,211,0.5); }
+
+  .spin-row{ display:flex; justify-content:center; margin-top:18px; }
+  .spin-btn{
+    width: 116px; height:116px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--pink), #9c1a52 75%);
+    border: 5px solid var(--gold-bright); color:#fff; font-family:'Poppins'; font-weight:800; font-size:17px; letter-spacing:.04em;
+    cursor:pointer; box-shadow: 0 0 0 6px rgba(255,61,129,0.15), 0 10px 24px rgba(0,0,0,0.5);
+    animation: pulse 2.2s ease-in-out infinite; transition: transform .12s;
+  }
+  .spin-btn:hover{ transform: scale(1.04); }
+  .spin-btn:active{ transform: scale(0.96); }
+  .spin-btn:disabled{ opacity:.5; cursor:not-allowed; animation:none; }
+  @keyframes pulse{
+    0%,100%{ box-shadow: 0 0 0 6px rgba(255,61,129,0.15), 0 10px 24px rgba(0,0,0,0.5); }
+    50%{ box-shadow: 0 0 0 14px rgba(255,61,129,0.06), 0 10px 30px rgba(0,0,0,0.5); }
+  }
+
+  .buyin-row{ display:flex; justify-content:center; gap:10px; margin-top:14px; }
+  .buyin-btn{
+    background:none; border: 1.5px solid rgba(232,181,77,0.4); color: var(--gold-bright);
+    padding: 8px 18px; border-radius: 20px; font-size:12.5px; font-weight:600; cursor:pointer; letter-spacing:.03em;
+  }
+  .buyin-btn:hover{ background: rgba(232,181,77,0.12); }
+
+  .fx-layer{ position:absolute; inset:0; overflow:visible; pointer-events:none; z-index:5; }
+  .coin{ position:absolute; top:-20px; font-size:22px; animation: fall linear forwards; }
+  @keyframes fall{ to{ transform: translateY(420px) rotate(340deg); opacity:0; } }
+
+  .overlay{ position:fixed; inset:0; background: rgba(8,4,14,0.72); display:flex; align-items:center; justify-content:center; z-index:50; padding:16px; }
+  .hidden{ display:none !important; }
+  .modal{ background: var(--panel); border: 2px solid rgba(232,181,77,0.4); border-radius: 20px; padding: 20px; width: 100%; max-width: 320px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+  .modal h3{ margin: 0 0 4px; font-size:16px; color: var(--gold-bright); }
+  .modal p.sub{ margin:0 0 14px; font-size:12px; color: rgba(245,233,211,0.55); }
+  .keypad-display{
+    font-family:'Orbitron'; font-size:28px; font-weight:700; text-align:center; background: var(--bg-deeper);
+    border-radius:10px; padding:12px 8px; margin-bottom:14px; color: var(--gold-bright); border: 1px solid rgba(232,181,77,0.3); min-height:44px;
+  }
+  .keypad-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:8px; }
+  .key{ padding: 14px 0; border-radius:10px; border:none; background: rgba(245,233,211,0.08); color: var(--cream); font-family:'Poppins'; font-weight:600; font-size:16px; cursor:pointer; }
+  .key:hover{ background: rgba(245,233,211,0.16); }
+  .modal-actions{ display:flex; gap:8px; margin-top:14px; }
+  .modal-actions button{ flex:1; padding:12px; border-radius:10px; border:none; cursor:pointer; font-weight:700; font-size:13px; letter-spacing:.02em; }
+  .btn-cancel{ background: rgba(245,233,211,0.08); color: var(--cream); }
+  .btn-confirm{ background: linear-gradient(135deg, var(--gold-bright), var(--gold)); color:#241134; }
+
+  .drawer{
+    position: fixed; top:0; right:0; height:100%; width: min(380px, 92vw); background: var(--panel);
+    border-left: 2px solid rgba(232,181,77,0.4); box-shadow: -20px 0 50px rgba(0,0,0,0.5);
+    transform: translateX(100%); transition: transform .28s ease; z-index: 60; overflow-y:auto; padding: 20px 18px 30px;
+  }
+  .drawer.open{ transform: translateX(0); }
+  .drawer h2{ font-size:17px; color: var(--gold-bright); margin: 0 0 2px; }
+  .drawer .sub{ font-size:11.5px; color: rgba(245,233,211,0.5); margin: 0 0 16px; }
+  .drawer-close{ position:absolute; top:16px; right:16px; background:none; border:none; color: var(--cream); font-size:20px; cursor:pointer; }
+
+  .rtp-card{
+    background: var(--bg-deeper); border: 1.5px solid rgba(232,181,77,0.35); border-radius: 14px;
+    padding: 14px; margin-bottom:18px; display:flex; gap:10px;
+  }
+  .rtp-stat{ flex:1; text-align:center; }
+  .rtp-stat .n{ font-family:'Orbitron'; font-size:22px; font-weight:700; color: var(--gold-bright); }
+  .rtp-stat.edge .n{ color: var(--pink); }
+  .rtp-stat .l{ font-size:9px; text-transform:uppercase; letter-spacing:.08em; color: rgba(245,233,211,0.5); margin-top:2px; }
+
+  .preset-row{ display:flex; gap:8px; margin-bottom:18px; }
+  .preset-btn{
+    flex:1; padding:9px 4px; border-radius:10px; border:1.5px solid rgba(232,181,77,0.35);
+    background: rgba(232,181,77,0.08); color: var(--gold-bright); font-weight:700; font-size:11.5px; cursor:pointer;
+  }
+  .preset-btn:hover{ background: rgba(232,181,77,0.18); }
+
+  .field-block{ margin-bottom: 18px; }
+  .field-block label{ font-size:12px; font-weight:700; letter-spacing:.04em; color: var(--cream); }
+
+  .paytable{ width:100%; border-collapse: collapse; font-size:12px; }
+  .paytable th{ text-align:center; font-size:9.5px; text-transform:uppercase; letter-spacing:.08em; color: rgba(245,233,211,0.45); padding-bottom:6px; font-weight:700; }
+  .paytable td{ padding: 6px 2px; text-align:center; border-top: 1px solid rgba(245,233,211,0.08); }
+  .paytable .glyph{ font-size:20px; }
+  .mini-stepper{ display:flex; align-items:center; justify-content:center; gap:4px; }
+  .mini-stepper button{ width:22px; height:22px; border-radius:6px; border:1px solid rgba(232,181,77,0.4); background: rgba(232,181,77,0.1); color: var(--gold-bright); font-size:12px; cursor:pointer; line-height:1; }
+  .mini-stepper .n{ font-family:'Orbitron'; font-size:12px; min-width:26px; }
+
+  .drawer-actions{ display:flex; gap:8px; margin-top:20px; }
+  .drawer-actions button{ flex:1; padding:11px; border-radius:10px; border:none; cursor:pointer; font-weight:700; font-size:12.5px; }
+  .btn-reset{ background: rgba(245,233,211,0.08); color: var(--cream); }
+  .btn-save{ background: linear-gradient(135deg, var(--gold-bright), var(--gold)); color:#241134; }
+
+  #ledgerBody{ display: table-row-group; }
+  .paytable .amt.up{ color:#8affc1; font-weight:700; }
+  .paytable .amt.down{ color: var(--red); font-weight:700; }
+  #ledgerOverlay table{ display:block; max-height:280px; overflow-y:auto; }
+  #ledgerOverlay thead, #ledgerOverlay tbody tr{ display:table; width:100%; table-layout:fixed; }
+  #ledgerOverlay thead{ width: calc(100% - 1em); }
+  .empty-note{ font-size:12px; color: rgba(245,233,211,0.4); text-align:center; padding: 10px 0; }
+
+  .modal.shake{ animation: shakeX .35s; }
+  @keyframes shakeX{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
+
+  @media (max-width:420px){
+    .grid-wrap{ width:250px; height:232px; }
+    .reel{ width:76px; height:232px; }
+    .sym{ height:77.3px; font-size:36px; }
+    .payline-svg{ width:250px; height:232px; }
+    .spin-btn{ width:98px; height:98px; font-size:14px; }
+    .readouts{ grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="top-controls">
+    <button class="icon-btn" id="muteBtn" title="Toggle sound">🔊</button>
+    <button class="icon-btn" id="adminBtn" title="Admin settings">⚙️</button>
+  </div>
+
+  <div class="cabinet-wrap" id="cabinetWrap">
+    <div class="cabinet">
+      <div class="brand">
+        <h1>Lucky Strike</h1>
+        <p>House Odds · Tune To Taste</p>
+      </div>
+
+      <div class="readouts">
+        <div class="readout"><div class="label">Balance</div><div class="value" id="balanceVal">$0</div></div>
+        <div class="readout"><div class="label">Per Line</div><div class="value" id="perLineVal">$0</div></div>
+        <div class="readout"><div class="label">Total Bet</div><div class="value" id="totalBetVal">$0</div></div>
+        <div class="readout win"><div class="label">Last Win</div><div class="value" id="winVal">$0</div></div>
+      </div>
+
+      <div class="reel-frame">
+        <div class="grid-wrap">
+          <div class="reels" id="reels">
+            <div class="reel"><div class="strip" id="strip0"></div></div>
+            <div class="reel"><div class="strip" id="strip1"></div></div>
+            <div class="reel"><div class="strip" id="strip2"></div></div>
+          </div>
+          <svg class="payline-svg" id="paylineSvg" viewBox="0 0 290 270"></svg>
+        </div>
+        <div class="fx-layer" id="fxLayer"></div>
+      </div>
+
+      <div class="result-msg" id="resultMsg">Choose your lines, place a bet, and pull the lever!</div>
+
+      <div class="section-label"><span>Paylines</span></div>
+      <div class="lines-row">
+        <button class="line-btn" data-n="1">1 Line</button>
+        <button class="line-btn active" data-n="3">3 Lines</button>
+      </div>
+
+      <div class="section-label"><span>Bet Per Line</span></div>
+      <div class="chip-row">
+        <div class="chip c1" data-amt="1">$1</div>
+        <div class="chip c2" data-amt="2">$2</div>
+        <div class="chip c5" data-amt="5">$5</div>
+      </div>
+      <div class="util-row">
+        <button class="util-btn" id="halfBetBtn">½ Bet</button>
+        <button class="util-btn" id="clearBetBtn">Clear</button>
+        <button class="util-btn" id="maxBetBtn">Max Bet</button>
+      </div>
+
+      <div class="spin-row"><button class="spin-btn" id="spinBtn">SPIN</button></div>
+      <div class="buyin-row">
+        <button class="buyin-btn" id="buyInBtn">💵 Buy In</button>
+        <button class="buyin-btn" id="newPlayerBtn">👤 New Player</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="keypadOverlay">
+  <div class="modal">
+    <h3 id="keypadTitle">Enter Buy-In</h3>
+    <p class="sub" id="keypadSub">How much cash is this player starting with?</p>
+    <div class="keypad-display" id="keypadDisplay">$0</div>
+    <div class="keypad-grid">
+      <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
+      <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
+      <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
+      <button class="key" data-k="00">00</button><button class="key" data-k="0">0</button><button class="key" data-k="back">⌫</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="keypadCancel">Cancel</button>
+      <button class="btn-confirm" id="keypadConfirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="newPlayerWarnOverlay">
+  <div class="modal">
+    <h3>⚠️ Start a new player?</h3>
+    <p class="sub">You're entering as a new player. The current balance will be wiped to $0 and can't be recovered. Continue?</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="newPlayerCancel">Cancel</button>
+      <button class="btn-confirm" id="newPlayerConfirm">Yes, start new player</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="publicPaytableOverlay">
+  <div class="modal" style="max-width:340px;">
+    <h3>Paytable</h3>
+    <p class="sub">Odds and payout multiplier for each symbol.</p>
+    <table class="paytable">
+      <thead><tr><th>Symbol</th><th>Odds</th><th>Payout ×</th></tr></thead>
+      <tbody id="publicPaytableBody"></tbody>
+    </table>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="publicPaytableClose">Close</button>
+      <button class="btn-confirm" id="goToAdminBtn">🔑 Admin Settings</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="passwordOverlay">
+  <div class="modal">
+    <h3>Dealer Access</h3>
+    <p class="sub" id="passwordSub">Enter the settings password to view or change odds, payouts, and house edge.</p>
+    <div class="keypad-display" id="passwordDisplay">••••</div>
+    <div class="keypad-grid">
+      <button class="key" data-pk="1">1</button><button class="key" data-pk="2">2</button><button class="key" data-pk="3">3</button>
+      <button class="key" data-pk="4">4</button><button class="key" data-pk="5">5</button><button class="key" data-pk="6">6</button>
+      <button class="key" data-pk="7">7</button><button class="key" data-pk="8">8</button><button class="key" data-pk="9">9</button>
+      <button class="key" data-pk="00">00</button><button class="key" data-pk="0">0</button><button class="key" data-pk="back">⌫</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="passwordCancel">Cancel</button>
+      <button class="btn-confirm" id="passwordConfirm">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="changePinOverlay">
+  <div class="modal">
+    <h3 id="cpTitle">Enter Current PIN</h3>
+    <p class="sub" id="cpSub">Confirm it's you before setting a new PIN.</p>
+    <div class="keypad-display" id="cpDisplay">••••</div>
+    <div class="keypad-grid">
+      <button class="key" data-cpk="1">1</button><button class="key" data-cpk="2">2</button><button class="key" data-cpk="3">3</button>
+      <button class="key" data-cpk="4">4</button><button class="key" data-cpk="5">5</button><button class="key" data-cpk="6">6</button>
+      <button class="key" data-cpk="7">7</button><button class="key" data-cpk="8">8</button><button class="key" data-cpk="9">9</button>
+      <button class="key" data-cpk="0">0</button><button class="key" data-cpk="back">⌫</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="cpCancel">Cancel</button>
+      <button class="btn-confirm" id="cpConfirm">Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="drawer" id="adminDrawer">
+  <button class="drawer-close" id="drawerClose">✕</button>
+  <h2>Dealer Settings</h2>
+  <p class="sub">The paytable below <em>is</em> the odds — there's no hidden dial. Adjust it and watch the house edge move in real time.</p>
+
+  <div class="rtp-card">
+    <div class="rtp-stat"><div class="n" id="rtpStat">91%</div><div class="l">Est. RTP</div></div>
+    <div class="rtp-stat edge"><div class="n" id="edgeStat">9%</div><div class="l">House Edge</div></div>
+  </div>
+
+  <div class="section-label" style="margin-top:0;">Quick Presets</div>
+  <div class="preset-row">
+    <button class="preset-btn" data-preset="tight">Tight ~72%</button>
+    <button class="preset-btn" data-preset="standard">Standard ~87%</button>
+    <button class="preset-btn" data-preset="loose">Loose ~88%</button>
+  </div>
+
+  <div class="field-block">
+    <label>Paytable — Odds &amp; Payout Multiplier</label>
+    <table class="paytable" id="paytable">
+      <thead><tr><th>Symbol</th><th>Odds</th><th>Payout ×</th></tr></thead>
+      <tbody id="paytableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="drawer-actions">
+    <button class="btn-reset" id="resetDefaultsBtn">Reset Defaults</button>
+    <button class="btn-save" id="saveSettingsBtn">Save &amp; Close</button>
+  </div>
+  <div class="drawer-actions" style="margin-top:8px;">
+    <button class="btn-reset" id="lockNowBtn">🔒 Lock Settings Now</button>
+    <button class="btn-reset" id="changePinBtn">🔑 Change PIN</button>
+  </div>
+  <div class="drawer-actions" style="margin-top:8px;">
+    <button class="btn-reset" id="ledgerBtn" style="flex:1;">📒 Tonight's Ledger</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="ledgerOverlay">
+  <div class="modal" style="max-width:420px;">
+    <h3>Tonight's Ledger</h3>
+    <p class="sub">Every player who's cashed out or started fresh this session.</p>
+    <table class="paytable" style="font-size:11.5px;">
+      <thead><tr><th>Player</th><th>Buy-ins</th><th>Put in</th><th>Walked out</th><th>Net</th></tr></thead>
+      <tbody id="ledgerBody"></tbody>
+    </table>
+    <div id="ledgerEmptyNote"></div>
+    <div class="modal-actions"><button class="btn-cancel" id="ledgerClose" style="flex:1;">Close</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SYMBOL_H = 90;
+  var LEAD = 12, TAIL = 2; // symbols before/after the visible target triplet in each strip
+
+  var BASE_ODDS = { cherry:41, lemon:30, clover:18, bell:10, seven:1 };
+  var BASE_PAYOUT = { cherry:6, lemon:10, clover:22, bell:55, seven:100 };
+  var GLYPHS = { cherry:'🍒', lemon:'🍋', clover:'🍀', bell:'🔔', seven:'7' };
+  var SEVEN_IDS = { seven:true };
+
+  function freshSymbols(payoutTable){
+    return Object.keys(BASE_ODDS).map(function(id){
+      return { id:id, glyph:GLYPHS[id], odds:BASE_ODDS[id], payout: payoutTable[id], seven: !!SEVEN_IDS[id] };
+    });
+  }
+
+  var LINES = {
+    top:      { rows:[0,0,0], color:'#ff3d81' },
+    mid:      { rows:[1,1,1], color:'#e8b54d' },
+    bottom:   { rows:[2,2,2], color:'#4fd3e8' }
+  };
+  var LINE_SETS = {
+    1: ['mid'],
+    3: ['top','mid','bottom']
+  };
+  var COL_X = [45,145,245];
+  var ROW_Y = [45,135,225];
+  var ADMIN_PASSWORD_DEFAULT = "1234"; // TODO: change before final release
+
+  var state = {
+    balance: 0,
+    perLineBet: 0,
+    activeLineCount: 3,
+    lastWin: 0,
+    symbols: freshSymbols(BASE_PAYOUT),
+    spinning: false,
+    playerNum: 1,
+    currentPlayer: { buyInCount: 0, totalPutIn: 0 },
+    ledger: [],
+    muted: false,
+    keypadMode: null,
+    keypadBuf: "",
+    adminUnlocked: false,
+    passwordBuf: "",
+    adminPassword: ADMIN_PASSWORD_DEFAULT,
+    cp: { step:'old', oldBuf:'', newBuf:'', confirmBuf:'' }
+  };
+
+  // ---------- helpers ----------
+  function money(n){ n = Math.round(n); return "$" + n.toLocaleString('en-US'); }
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+  function symById(id){ return state.symbols.filter(function(s){ return s.id===id; })[0]; }
+
+  function weightedPick(list){
+    var total = list.reduce(function(a,s){ return a + s.odds; }, 0);
+    var r = Math.random() * total;
+    for (var i=0;i<list.length;i++){ r -= list[i].odds; if (r <= 0) return list[i]; }
+    return list[list.length-1];
+  }
+
+  function computeRTP(symbols){
+    var total = symbols.reduce(function(a,s){ return a+s.odds; },0);
+    return symbols.reduce(function(a,s){
+      var p = s.odds/total;
+      return a + Math.pow(p,3)*s.payout;
+    }, 0);
+  }
+
+  // ---------- audio ----------
+  var audioCtx = null;
+  function ctx(){ if(!audioCtx){ var AC=window.AudioContext||window.webkitAudioContext; audioCtx=new AC(); } return audioCtx; }
+  function tone(freq,dur,delay,type,vol){
+    if(state.muted) return;
+    try{
+      var c=ctx(); var o=c.createOscillator(); var g=c.createGain();
+      o.type=type||'sine'; o.frequency.value=freq; g.gain.value=vol||0.06;
+      o.connect(g); g.connect(c.destination);
+      var t0=c.currentTime+(delay||0);
+      o.start(t0);
+      g.gain.setValueAtTime(g.gain.value,t0);
+      g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+      o.stop(t0+dur+0.02);
+    }catch(e){}
+  }
+  function sfxSpin(){ tone(220,0.08,0,'square',0.04); }
+  function sfxWin(big){
+    tone(523.25,0.12,0,'triangle',0.07); tone(659.25,0.12,0.1,'triangle',0.07);
+    tone(783.99,0.18,0.2,'triangle',0.08); if(big) tone(1046.5,0.3,0.32,'triangle',0.09);
+  }
+  function sfxLose(){ tone(180,0.25,0,'sawtooth',0.03); }
+
+  // ---------- DOM ----------
+  var $ = function(id){ return document.getElementById(id); };
+  var balanceVal=$('balanceVal'), perLineVal=$('perLineVal'), totalBetVal=$('totalBetVal'), winVal=$('winVal');
+  var resultMsg=$('resultMsg'), spinBtn=$('spinBtn');
+  var strips=[$('strip0'),$('strip1'),$('strip2')];
+  var fxLayer=$('fxLayer');
+  var paylineSvg=$('paylineSvg');
+
+  // ---------- bulbs ----------
+  function layoutBulbs(){
+    var wrap=$('cabinetWrap');
+    document.querySelectorAll('.bulb').forEach(function(b){ b.remove(); });
+    var w=wrap.offsetWidth, h=wrap.offsetHeight, spacing=26;
+    var nTop = Math.max(2, Math.round(w/spacing));
+    var nSide = Math.max(2, Math.round(h/spacing));
+    var points = [];
+    for(var i=0;i<nTop;i++)  points.push([ (i/nTop)*w, 0 ]);
+    for(var i=0;i<nSide;i++) points.push([ w, (i/nSide)*h ]);
+    for(var i=0;i<nTop;i++)  points.push([ w-(i/nTop)*w, h ]);
+    for(var i=0;i<nSide;i++) points.push([ 0, h-(i/nSide)*h ]);
+    var total = points.length;
+    points.forEach(function(p,i){
+      var bulb=document.createElement('div');
+      bulb.className='bulb'; bulb.style.left=p[0]+'px'; bulb.style.top=p[1]+'px';
+      bulb.style.animationDelay=(-(i/total)*1.6)+'s';
+      wrap.appendChild(bulb);
+    });
+  }
+
+  // ---------- paylines ----------
+  function drawPaylines(){
+    var parts = [];
+    Object.keys(LINES).forEach(function(key){
+      var line=LINES[key];
+      var pts = line.rows.map(function(r,ci){ return COL_X[ci]+','+ROW_Y[r]; }).join(' ');
+      parts.push('<polyline data-line="'+key+'" points="'+pts+'" stroke="'+line.color+'"></polyline>');
+    });
+    paylineSvg.innerHTML = parts.join('');
+    refreshActiveLines();
+  }
+  function refreshActiveLines(){
+    var active = LINE_SETS[state.activeLineCount];
+    paylineSvg.querySelectorAll('polyline').forEach(function(p){
+      var key = p.getAttribute('data-line');
+      p.classList.toggle('active', active.indexOf(key) !== -1);
+      p.classList.remove('hit');
+    });
+  }
+  function flashHitLines(hitKeys){
+    paylineSvg.querySelectorAll('polyline').forEach(function(p){
+      var key=p.getAttribute('data-line');
+      p.classList.toggle('hit', hitKeys.indexOf(key)!==-1);
+    });
+  }
+
+  // ---------- reel strips ----------
+  function buildStrip(el, triplet){
+    var seq=[];
+    for(var i=0;i<LEAD;i++) seq.push(weightedPick(state.symbols));
+    seq.push(triplet[0]); seq.push(triplet[1]); seq.push(triplet[2]);
+    for(var j=0;j<TAIL;j++) seq.push(weightedPick(state.symbols));
+    el.innerHTML="";
+    seq.forEach(function(s){
+      var d=document.createElement('div');
+      d.className='sym'+(s.seven?' seven':'');
+      d.textContent=s.glyph;
+      el.appendChild(d);
+    });
+    el.style.transition='none';
+    el.style.transform='translateY(0px)';
+    return LEAD; // index of top of the visible triplet
+  }
+
+  function randomTriplet(){
+    return [weightedPick(state.symbols), weightedPick(state.symbols), weightedPick(state.symbols)];
+  }
+
+  function renderStaticReels(){
+    strips.forEach(function(el){ buildStrip(el, randomTriplet()); });
+  }
+
+  // ---------- display ----------
+  function renderDisplays(){
+    balanceVal.textContent = money(state.balance);
+    perLineVal.textContent = money(state.perLineBet);
+    totalBetVal.textContent = money(state.perLineBet * state.activeLineCount);
+    winVal.textContent = money(state.lastWin);
+    var totalBet = state.perLineBet * state.activeLineCount;
+    var canSpin = !state.spinning && state.perLineBet > 0 && totalBet <= state.balance;
+    spinBtn.disabled = !canSpin;
+  }
+
+  var MAX_PER_LINE_BET = 5;
+
+  function addChip(amt){
+    if(state.spinning) return;
+    var next = state.perLineBet + amt;
+    var maxPerLine = Math.min(MAX_PER_LINE_BET, Math.floor(state.balance / state.activeLineCount));
+    if(next > maxPerLine) next = maxPerLine;
+    state.perLineBet = Math.max(0,next);
+    renderDisplays();
+  }
+  function clearBet(){ if(state.spinning) return; state.perLineBet=0; renderDisplays(); }
+  function halfBet(){ if(state.spinning) return; state.perLineBet=Math.floor(state.perLineBet/2); renderDisplays(); }
+  function maxBet(){
+    if(state.spinning) return;
+    state.perLineBet = Math.min(MAX_PER_LINE_BET, Math.floor(state.balance / state.activeLineCount));
+    renderDisplays();
+  }
+  function setLines(n){
+    if(state.spinning) return;
+    state.activeLineCount = n;
+    document.querySelectorAll('.line-btn').forEach(function(b){
+      b.classList.toggle('active', parseInt(b.getAttribute('data-n'),10)===n);
+    });
+    var maxPerLine = Math.floor(state.balance / n);
+    if(state.perLineBet > maxPerLine) state.perLineBet = maxPerLine;
+    refreshActiveLines();
+    renderDisplays();
+  }
+
+  // ---------- confetti ----------
+  function coinShower(big){
+    var count = big?26:14;
+    var glyphs=['🪙','💰','✨'];
+    for(var i=0;i<count;i++){
+      (function(){
+        var c=document.createElement('div');
+        c.className='coin'; c.textContent=glyphs[Math.floor(Math.random()*glyphs.length)];
+        c.style.left=(Math.random()*94)+'%';
+        var dur=1.1+Math.random()*0.9;
+        c.style.animationDuration=dur+'s';
+        c.style.fontSize=(16+Math.random()*14)+'px';
+        fxLayer.appendChild(c);
+        setTimeout(function(){ c.remove(); }, dur*1000+50);
+      })();
+    }
+  }
+
+  // ---------- spin ----------
+  function spin(){
+    if(state.spinning) return;
+    var totalBet = state.perLineBet * state.activeLineCount;
+    if(state.perLineBet<=0 || totalBet>state.balance) return;
+
+    state.spinning=true;
+    state.balance -= totalBet;
+    state.lastWin = 0;
+    resultMsg.textContent="Spinning...";
+    resultMsg.className='result-msg';
+    refreshActiveLines();
+    renderDisplays();
+    sfxSpin();
+
+    // grid[col][row]
+    var grid = [
+      [weightedPick(state.symbols), weightedPick(state.symbols), weightedPick(state.symbols)],
+      [weightedPick(state.symbols), weightedPick(state.symbols), weightedPick(state.symbols)],
+      [weightedPick(state.symbols), weightedPick(state.symbols), weightedPick(state.symbols)]
+    ];
+
+    var triplets = [0,1,2].map(function(col){ return [grid[col][0], grid[col][1], grid[col][2]]; });
+    var indices = strips.map(function(el,i){ return buildStrip(el, triplets[i]); });
+
+    var durations=[900,1250,1650];
+    strips.forEach(function(el,i){
+      void el.offsetHeight;
+      el.style.transition='transform '+durations[i]+'ms cubic-bezier(0.12,0.62,0.18,1)';
+      el.style.transform='translateY(-'+(indices[i]*SYMBOL_H)+'px)';
+    });
+
+    setTimeout(function(){ finishSpin(grid); }, durations[2]+120);
+  }
+
+  function finishSpin(grid){
+    state.spinning=false;
+    var active = LINE_SETS[state.activeLineCount];
+    var totalWin = 0;
+    var hitLines = [];
+    var winDescriptions = [];
+
+    active.forEach(function(key){
+      var line = LINES[key];
+      var syms = line.rows.map(function(r,ci){ return grid[ci][r]; });
+      if(syms[0].id===syms[1].id && syms[1].id===syms[2].id){
+        var sym = syms[0];
+        var payout = Math.round(state.perLineBet * sym.payout);
+        totalWin += payout;
+        hitLines.push(key);
+        winDescriptions.push(sym.glyph+' × '+money(payout));
+      }
+    });
+
+    flashHitLines(hitLines);
+
+    if(totalWin>0){
+      state.balance += totalWin;
+      state.lastWin = totalWin;
+      var big = totalWin >= state.perLineBet*40;
+      resultMsg.textContent = (hitLines.length>1? hitLines.length+' lines hit! ' : '') + winDescriptions.join('  •  ') + '  =  ' + money(totalWin);
+      resultMsg.className='result-msg win';
+      coinShower(big);
+      sfxWin(big);
+    } else {
+      state.lastWin=0;
+      resultMsg.textContent="No matching lines — spin again!";
+      resultMsg.className='result-msg lose';
+      sfxLose();
+    }
+    renderDisplays();
+  }
+
+  // ---------- keypad ----------
+  var keypadOverlay=$('keypadOverlay'), keypadDisplay=$('keypadDisplay');
+  function openKeypad(mode){ state.keypadMode=mode; state.keypadBuf=""; keypadDisplay.textContent="$0"; keypadOverlay.classList.remove('hidden'); }
+  function closeKeypad(){ keypadOverlay.classList.add('hidden'); }
+  function keypadPress(k){
+    if(k==='back'){ state.keypadBuf=state.keypadBuf.slice(0,-1); }
+    else { if(state.keypadBuf.length<7) state.keypadBuf+=k; }
+    var n=parseInt(state.keypadBuf||"0",10);
+    keypadDisplay.textContent=money(n);
+  }
+  function confirmKeypad(){
+    var amt=parseInt(state.keypadBuf||"0",10);
+    if(amt>0 && state.keypadMode==='topup'){
+      state.balance += amt;
+      state.currentPlayer.totalPutIn += amt;
+      state.currentPlayer.buyInCount += 1;
+      resultMsg.textContent="Buy-in added — good luck!";
+      resultMsg.className='result-msg';
+    }
+    renderDisplays();
+    closeKeypad();
+  }
+
+  function archiveCurrentPlayerToLedger(){
+    var cp = state.currentPlayer;
+    if(cp.buyInCount===0 && state.balance===0) return; // nothing happened, don't clutter the ledger
+    state.ledger.unshift({
+      name: 'Player '+state.playerNum,
+      buyIns: cp.buyInCount,
+      putIn: cp.totalPutIn,
+      walkedOut: state.balance,
+      net: state.balance - cp.totalPutIn
+    });
+  }
+
+  var newPlayerWarnOverlay=$('newPlayerWarnOverlay');
+  function startNewPlayer(){
+    archiveCurrentPlayerToLedger();
+    state.playerNum += 1;
+    state.balance = 0;
+    state.currentPlayer = { buyInCount: 0, totalPutIn: 0 };
+    state.perLineBet = 0;
+    state.lastWin = 0;
+    resultMsg.textContent = "New player — balance reset to $0. Tap Buy In to get started.";
+    resultMsg.className = 'result-msg';
+    renderDisplays();
+  }
+
+  // ---------- ledger ----------
+  var ledgerOverlay=$('ledgerOverlay'), ledgerBody=$('ledgerBody'), ledgerEmptyNote=$('ledgerEmptyNote');
+  function renderLedger(){
+    if(!state.ledger.length){
+      ledgerBody.innerHTML='';
+      ledgerEmptyNote.innerHTML='<div class="empty-note">No players archived yet tonight.</div>';
+      return;
+    }
+    ledgerEmptyNote.innerHTML='';
+    ledgerBody.innerHTML = state.ledger.map(function(item){
+      var netClass = item.net>0 ? 'up' : (item.net<0 ? 'down' : '');
+      var netText = (item.net>0?'+':'') + money(item.net);
+      return '<tr>'+
+        '<td>'+item.name+'</td>'+
+        '<td>'+item.buyIns+'</td>'+
+        '<td>'+money(item.putIn)+'</td>'+
+        '<td>'+money(item.walkedOut)+'</td>'+
+        '<td class="amt '+netClass+'">'+netText+'</td>'+
+      '</tr>';
+    }).join('');
+  }
+
+  // ---------- admin ----------
+  var adminDrawer=$('adminDrawer'), rtpStat=$('rtpStat'), edgeStat=$('edgeStat'), paytableBody=$('paytableBody');
+
+  function renderAdmin(){
+    var rtp = computeRTP(state.symbols);
+    rtpStat.textContent = Math.round(rtp*100)+'%';
+    edgeStat.textContent = Math.round((1-rtp)*100)+'%';
+    paytableBody.innerHTML = state.symbols.map(function(s, idx){
+      return '<tr>'+
+        '<td class="glyph">'+(s.seven?'<b>7</b>':s.glyph)+'</td>'+
+        '<td><div class="mini-stepper"><button data-act="odds-" data-i="'+idx+'">−</button><span class="n">'+s.odds+'</span><button data-act="odds+" data-i="'+idx+'">+</button></div></td>'+
+        '<td><div class="mini-stepper"><button data-act="pay-" data-i="'+idx+'">−</button><span class="n">'+s.payout+'×</span><button data-act="pay+" data-i="'+idx+'">+</button></div></td>'+
+      '</tr>';
+    }).join('');
+  }
+
+  paytableBody.addEventListener('click', function(e){
+    var btn=e.target.closest('button[data-act]'); if(!btn) return;
+    var i=parseInt(btn.getAttribute('data-i'),10), act=btn.getAttribute('data-act');
+    var s=state.symbols[i];
+    if(act==='odds-') s.odds=clamp(s.odds-1,1,60);
+    if(act==='odds+') s.odds=clamp(s.odds+1,1,60);
+    if(act==='pay-') s.payout=clamp(s.payout-1,1,999);
+    if(act==='pay+') s.payout=clamp(s.payout+1,1,999);
+    renderAdmin();
+  });
+
+  function applyPreset(name){
+    var factor = name==='tight'?0.85 : name==='loose'?1.05 : 1.0; // preserves increasing order since it's a uniform scale
+    state.symbols = Object.keys(BASE_ODDS).map(function(id){
+      return { id:id, glyph:GLYPHS[id], odds:BASE_ODDS[id], payout: Math.max(1,Math.round(BASE_PAYOUT[id]*factor)), seven: !!SEVEN_IDS[id] };
+    });
+    renderAdmin();
+  }
+  document.querySelectorAll('.preset-btn').forEach(function(b){
+    b.addEventListener('click', function(){ applyPreset(b.getAttribute('data-preset')); });
+  });
+
+  $('resetDefaultsBtn').addEventListener('click', function(){ applyPreset('standard'); });
+  $('saveSettingsBtn').addEventListener('click', function(){ adminDrawer.classList.remove('open'); });
+  $('drawerClose').addEventListener('click', function(){ adminDrawer.classList.remove('open'); });
+  $('adminBtn').addEventListener('click', function(){
+    renderPublicPaytable();
+    publicPaytableOverlay.classList.remove('hidden');
+  });
+  $('lockNowBtn').addEventListener('click', function(){
+    state.adminUnlocked = false;
+    adminDrawer.classList.remove('open');
+  });
+
+  // ---------- public (read-only) paytable ----------
+  var publicPaytableOverlay=$('publicPaytableOverlay'), publicPaytableBody=$('publicPaytableBody');
+  function renderPublicPaytable(){
+    var total = state.symbols.reduce(function(a,s){ return a+s.odds; },0);
+    publicPaytableBody.innerHTML = state.symbols.map(function(s){
+      var pct = Math.round((s.odds/total)*1000)/10;
+      return '<tr>'+
+        '<td class="glyph">'+(s.seven?'<b>7</b>':s.glyph)+'</td>'+
+        '<td>'+pct+'%</td>'+
+        '<td>'+s.payout+'×</td>'+
+      '</tr>';
+    }).join('');
+  }
+  $('publicPaytableClose').addEventListener('click', function(){
+    publicPaytableOverlay.classList.add('hidden');
+  });
+  $('goToAdminBtn').addEventListener('click', function(){
+    publicPaytableOverlay.classList.add('hidden');
+    if(state.adminUnlocked){
+      renderAdmin();
+      adminDrawer.classList.add('open');
+    } else {
+      openPasswordOverlay();
+    }
+  });
+
+  // ---------- admin password ----------
+  var passwordOverlay=$('passwordOverlay'), passwordDisplay=$('passwordDisplay'), passwordModal=passwordOverlay.querySelector('.modal');
+  function openPasswordOverlay(){
+    state.passwordBuf="";
+    passwordDisplay.textContent="••••";
+    $('passwordSub').textContent="Enter the settings password to view or change odds, payouts, and house edge.";
+    passwordOverlay.classList.remove('hidden');
+  }
+  function closePasswordOverlay(){ passwordOverlay.classList.add('hidden'); }
+  function passwordPress(k){
+    if(k==='back'){ state.passwordBuf=state.passwordBuf.slice(0,-1); }
+    else if(state.passwordBuf.length<8){ state.passwordBuf+=k; }
+    passwordDisplay.textContent = state.passwordBuf.length ? '•'.repeat(state.passwordBuf.length) : '••••';
+  }
+  function confirmPassword(){
+    if(state.passwordBuf === state.adminPassword){
+      state.adminUnlocked = true;
+      closePasswordOverlay();
+      renderAdmin();
+      adminDrawer.classList.add('open');
+    } else {
+      $('passwordSub').textContent = "Incorrect password — try again.";
+      passwordModal.classList.remove('shake');
+      void passwordModal.offsetWidth;
+      passwordModal.classList.add('shake');
+      state.passwordBuf="";
+      passwordDisplay.textContent="••••";
+    }
+  }
+  passwordOverlay.querySelectorAll('.key').forEach(function(k){
+    k.addEventListener('click', function(){ passwordPress(k.getAttribute('data-pk')); });
+  });
+  $('passwordCancel').addEventListener('click', closePasswordOverlay);
+  $('passwordConfirm').addEventListener('click', confirmPassword);
+
+  // ---------- change PIN ----------
+  var changePinOverlay=$('changePinOverlay'), cpDisplay=$('cpDisplay'), cpModal=changePinOverlay.querySelector('.modal');
+  var cpTitle=$('cpTitle'), cpSub=$('cpSub'), cpConfirmBtn=$('cpConfirm');
+
+  function openChangePin(){
+    state.cp = { step:'old', oldBuf:'', newBuf:'', confirmBuf:'' };
+    renderCp();
+    changePinOverlay.classList.remove('hidden');
+  }
+  function closeChangePin(){ changePinOverlay.classList.add('hidden'); }
+
+  function currentCpBuf(){
+    var cp = state.cp;
+    if(cp.step==='old') return cp.oldBuf;
+    if(cp.step==='new1') return cp.newBuf;
+    return cp.confirmBuf;
+  }
+  function setCurrentCpBuf(v){
+    var cp = state.cp;
+    if(cp.step==='old') cp.oldBuf=v;
+    else if(cp.step==='new1') cp.newBuf=v;
+    else cp.confirmBuf=v;
+  }
+  function renderCp(){
+    var cp = state.cp;
+    if(cp.step==='old'){
+      cpTitle.textContent='Enter Current PIN';
+      cpSub.textContent="Confirm it's you before setting a new PIN.";
+      cpConfirmBtn.textContent='Next';
+    } else if(cp.step==='new1'){
+      cpTitle.textContent='Choose a New PIN';
+      cpSub.textContent='Enter a new 4-digit PIN.';
+      cpConfirmBtn.textContent='Next';
+    } else {
+      cpTitle.textContent='Confirm New PIN';
+      cpSub.textContent='Enter the new PIN one more time.';
+      cpConfirmBtn.textContent='Save PIN';
+    }
+    var buf = currentCpBuf();
+    cpDisplay.textContent = buf.length ? '•'.repeat(buf.length) : '••••';
+  }
+  function cpPress(k){
+    var buf = currentCpBuf();
+    if(k==='back'){ buf = buf.slice(0,-1); }
+    else { buf = (buf+k).slice(0,4); }
+    setCurrentCpBuf(buf);
+    cpDisplay.textContent = buf.length ? '•'.repeat(buf.length) : '••••';
+  }
+  function cpShake(message){
+    cpSub.textContent = message;
+    cpModal.classList.remove('shake');
+    void cpModal.offsetWidth;
+    cpModal.classList.add('shake');
+  }
+  function cpConfirm(){
+    var cp = state.cp;
+    if(cp.step==='old'){
+      if(cp.oldBuf !== state.adminPassword){
+        cpShake('Incorrect PIN — try again.');
+        cp.oldBuf='';
+        cpDisplay.textContent='••••';
+        return;
+      }
+      cp.step='new1';
+      renderCp();
+    } else if(cp.step==='new1'){
+      if(cp.newBuf.length !== 4){
+        cpShake('PIN must be exactly 4 digits.');
+        return;
+      }
+      cp.step='confirm';
+      renderCp();
+    } else {
+      if(cp.confirmBuf !== cp.newBuf){
+        cpShake("PINs didn't match — enter the new PIN again.");
+        cp.step='new1'; cp.newBuf=''; cp.confirmBuf='';
+        renderCp();
+        return;
+      }
+      state.adminPassword = cp.newBuf;
+      closeChangePin();
+      $('passwordSub').textContent = 'PIN updated. Enter it next time you unlock settings.';
+    }
+  }
+  changePinOverlay.querySelectorAll('.key').forEach(function(k){
+    k.addEventListener('click', function(){ cpPress(k.getAttribute('data-cpk')); });
+  });
+  $('cpCancel').addEventListener('click', closeChangePin);
+  $('cpConfirm').addEventListener('click', cpConfirm);
+  $('changePinBtn').addEventListener('click', function(){
+    adminDrawer.classList.remove('open');
+    openChangePin();
+  });
+
+  // ---------- wire up ----------
+  document.querySelectorAll('.chip').forEach(function(chip){
+    chip.addEventListener('click', function(){ addChip(parseInt(chip.getAttribute('data-amt'),10)); });
+  });
+  $('clearBetBtn').addEventListener('click', clearBet);
+  $('halfBetBtn').addEventListener('click', halfBet);
+  $('maxBetBtn').addEventListener('click', maxBet);
+  spinBtn.addEventListener('click', spin);
+
+  document.querySelectorAll('.line-btn').forEach(function(b){
+    b.addEventListener('click', function(){ setLines(parseInt(b.getAttribute('data-n'),10)); });
+  });
+
+  $('buyInBtn').addEventListener('click', function(){
+    $('keypadTitle').textContent='Buy In';
+    $('keypadSub').textContent='How much cash is this player adding to their stack?';
+    openKeypad('topup');
+  });
+  keypadOverlay.querySelectorAll('.key').forEach(function(k){
+    k.addEventListener('click', function(){ keypadPress(k.getAttribute('data-k')); });
+  });
+  $('keypadCancel').addEventListener('click', closeKeypad);
+  $('keypadConfirm').addEventListener('click', confirmKeypad);
+
+  $('newPlayerBtn').addEventListener('click', function(){
+    newPlayerWarnOverlay.classList.remove('hidden');
+  });
+  $('newPlayerCancel').addEventListener('click', function(){
+    newPlayerWarnOverlay.classList.add('hidden');
+  });
+  $('newPlayerConfirm').addEventListener('click', function(){
+    newPlayerWarnOverlay.classList.add('hidden');
+    startNewPlayer();
+  });
+
+  $('ledgerBtn').addEventListener('click', function(){
+    adminDrawer.classList.remove('open');
+    renderLedger();
+    ledgerOverlay.classList.remove('hidden');
+  });
+  $('ledgerClose').addEventListener('click', function(){ ledgerOverlay.classList.add('hidden'); });
+
+  $('muteBtn').addEventListener('click', function(){
+    state.muted=!state.muted; $('muteBtn').textContent=state.muted?'🔇':'🔊';
+  });
+
+  window.addEventListener('resize', function(){
+    clearTimeout(window.__bt); window.__bt=setTimeout(layoutBulbs,150);
+  });
+
+  // ---------- init ----------
+  drawPaylines();
+  renderStaticReels();
+  renderDisplays();
+  renderAdmin();
+  setTimeout(layoutBulbs,60);
+})();
+</script>
+</body>
+</html>
